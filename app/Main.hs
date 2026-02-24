@@ -1,4 +1,6 @@
 module Main where
 
+import Items (ironOre)
+
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = print ironOre
