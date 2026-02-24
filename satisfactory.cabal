@@ -77,6 +77,8 @@ executable satisfactory
     hs-source-dirs: app, src
 
     other-modules:
+        Symbols.Items
+        Symbols.Recipes
         Items
         Syntax
 

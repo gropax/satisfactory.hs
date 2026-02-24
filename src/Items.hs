@@ -1,4 +1,10 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Items
   ( ItemId(..)
@@ -8,6 +14,9 @@ module Items
   ) where
 
 import GHC.Generics (Generic)
+import GHC.TypeLits
+import Data.Proxy
+import Symbols.Items
 
 
 newtype ItemId = ItemId String
@@ -16,27 +25,30 @@ newtype ItemId = ItemId String
 instance Show ItemId where
   show (ItemId i) = i
 
+itemId :: forall (s :: Symbol). KnownSymbol s => ItemId
+itemId = ItemId (symbolVal (Proxy @s))
+
 
 data Item = Item
-  { itemId    :: ItemId
-  , itemName  :: String
+  { iId    :: ItemId
+  , iName  :: String
   , stackSize :: Int
   }
 
 instance Show Item where
-  show = show . itemId
+  show = show . iId
 
 
 ironOre :: Item
 ironOre = Item
-  { itemId = ItemId "iron-ore"
-  , itemName = "Iron Ore"
+  { iId = itemId @IronOre
+  , iName = "Iron Ore"
   , stackSize = 100
   }
 
 ironIngot :: Item
 ironIngot = Item
-  { itemId = ItemId "iron-ingot"
-  , itemName = "Iron Ingot"
+  { iId = itemId @IronIngot
+  , iName = "Iron Ingot"
   , stackSize = 100
   }

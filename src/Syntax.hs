@@ -2,16 +2,18 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE TypeOperators #-}
---{-# LANGUAGE PolyKinds #-}
---{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Syntax
   ( Obj(..)
   , Mor(..)
   ) where
 
-import GHC.TypeLits (Symbol)
+import GHC.TypeLits (Symbol, KnownSymbol, symbolVal)
 import Data.Kind (Type)
+import Data.Proxy
+import Symbols.Items
+import Symbols.Recipes
 
 
 data Obj
@@ -23,6 +25,11 @@ data Obj
 
 infixr 7 :⊗
 infixr 6 :⊕
+
+--instance Show Obj where
+--  show I = "1"
+--  show O = "0"
+--  show (Itm s) = symbolVal (Proxy s)
 
 
 data Mor :: Obj -> Obj -> Type where
@@ -67,6 +74,11 @@ data Mor :: Obj -> Obj -> Type where
   AnnihR  :: Mor (a :⊗ O) O
   AnnihR' :: Mor O (a :⊗ O)
 
+  -- Primitive morphisms
+  Prim :: KnownSymbol r => Proxy r -> Mor a b
+
+
+
 infixl 1 ∘
 (∘) :: Mor b c -> Mor a b -> Mor a c
 f ∘ g = Comp g f
@@ -82,3 +94,14 @@ infixl 7 ⊗
 infixl 6 ⊕
 (⊕) :: Mor a b -> Mor c d -> Mor (a :⊕ c) (b :⊕ d)
 (⊕) = Plus
+
+
+
+ironMiner :: Mor I (Itm IronOre)
+ironMiner = Prim (Proxy @IronOreRecipe)
+
+ironSmelter :: Mor (Itm IronOre) (Itm IronIngot)
+ironSmelter = Prim (Proxy @IronIngotRecipe)
+
+
+test = ironMiner ∙ ironSmelter
