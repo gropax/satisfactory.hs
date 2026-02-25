@@ -6,7 +6,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Syntax1
+module SyntaxV1
   ( Obj(..)
   , Mor(..)
   ) where
