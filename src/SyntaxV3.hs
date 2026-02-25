@@ -8,9 +8,12 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
 module SyntaxV3
-  ( (∘), (∙), (⊗), σ
+  ( (∘), (∙), (⊗)
   , id1, id2, id3
+  , σ
   , σ132, σ213, σ231, σ312, σ321
+  , split2, split3, split4
+  , merge2, merge3, merge4
   , source, target
   , ironMiner, coalMiner
   , ironSmelter
@@ -30,6 +33,7 @@ import Symbols.Recipes
 -- * On ignore les boucles (pas d'opérateur de trace)
 -- * On strictifie les tyes produits en les représentant par des listes, le produit devenant la concaténation.
 -- * On représente les symétries comme produits d'identités et de la permutation élémentaire
+-- * On représente les morphismes "split" et "merge" comme morphismes structurels
 --
 -- Observations :
 -- * Il y a deux approches à l'implémentation des permutations. Celle-ci est plus simple que dans la v2, sans
@@ -59,7 +63,11 @@ data Mor :: Obj -> Obj -> Type where
   Tens :: Mor a b -> Mor c d -> Mor (a :⊗ c) (b :⊗ d)
 
   -- Isomorphisms of ⊗
-  TSwap   :: Mor (x ': y ': xs) (y ': x ': xs)
+  Swap  :: Mor (x ': y ': xs) (y ': x ': xs)
+
+  -- Split and merge morphisms
+  Split :: Mor a (a :⊗ a)
+  Merge :: Mor (a :⊗ a) a
 
 
 infixl 1 ∘
@@ -86,7 +94,7 @@ id3 = Id
 
 
 σ :: Mor '[a,b] '[b,a]
-σ = TSwap
+σ = Swap
 
 σ132 :: Mor '[a,b,c] '[a,c,b]
 σ132 = id1 ⊗ σ
@@ -104,12 +112,31 @@ id3 = Id
 σ321 = σ132 ∙ σ213 ∙ σ132
 
 
+split2 :: Mor '[a] '[a,a]
+split2 = Split
+
+split3 :: Mor '[a] '[a,a,a]
+split3 = split2 ∙ (split2 ⊗ id1)
+
+split4 :: Mor '[a] '[a,a,a,a]
+split4 = split3 ∙ (split2 ⊗ id2)
+
+merge2 :: Mor '[a,a] '[a]
+merge2 = Merge
+
+merge3 :: Mor '[a,a,a] '[a]
+merge3 = (merge2 ⊗ id1) ∙ merge2  
+
+merge4 :: Mor '[a,a,a,a] '[a]
+merge4 = (merge2 ⊗ id2) ∙ merge3
+
 
 source :: forall (r :: Symbol). Mor I (Itm r)
 source = Prim (Proxy @r)
 
 target :: forall (r :: Symbol). Mor (Itm r) I
 target = Prim (Proxy @r)
+
 
 coalMiner :: Mor I (Itm Coal)
 coalMiner = Prim (Proxy @CoalRecipe)
@@ -124,8 +151,11 @@ steelFoundry :: Mor (Itm IronOre :⊗ Itm Coal) (Itm SteelIngot)
 steelFoundry = Prim (Proxy @SteelIngotRecipe)
 
 
+test :: Mor I (Itm IronOre :⊗ Itm Coal)
 test  = ironMiner ⊗ source @Coal
+
 test' = source @Coal ⊗ ironMiner 
+test'' = ironMiner ∙ split2 ∙ (ironSmelter ⊗ ironSmelter) ∙ merge2 ∙ target @IronIngot
 
 ironIngotFactory = ironMiner ∙ ironSmelter
 steelIngotFactory   = (ironMiner ⊗ coalMiner) ∙ steelFoundry

@@ -71,19 +71,22 @@ executable satisfactory
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.18.3.0
+    build-depends:
+        base ^>=4.18.3.0,
+        containers
 
     -- Directories containing source files.
     hs-source-dirs: app, src
 
     other-modules:
-        Symbols.Items
-        Symbols.Recipes
-        Items
-        Syntax
-        SyntaxV1
-        SyntaxV2
-        SyntaxV3
+        Symbols.Items,
+        Symbols.Recipes,
+        Items,
+        Syntax,
+        SyntaxV1,
+        SyntaxV2,
+        SyntaxV3,
+        Circuits,
 
     -- Base language which the package is written in.
     default-language: Haskell2010
