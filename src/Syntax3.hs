@@ -7,10 +7,9 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module Syntax2
-  ( (∘), (∙), (⊗) , σ
+module Syntax3
+  ( (∘), (∙), (⊗), σ
   , id1, id2, id3
-  , σ1, σ2, σ3
   , σ132, σ213, σ231, σ312, σ321
   , source, target
   , ironMiner, coalMiner
@@ -25,13 +24,17 @@ import Symbols.Items
 import Symbols.Recipes
 
 
--- ===== Syntaxe 1 =====
+-- ===== Syntaxe v3 =====
 -- Hypothèses :
 -- * On ne travaille qu'au niveau des machines : on ignore les connecteurs, et donc l'opération de somme monoïdale.
 -- * On ignore les boucles (pas d'opérateur de trace)
 -- * On strictifie les tyes produits en les représentant par des listes, le produit devenant la concaténation.
--- * On représente les symétries comme composition de permutations adjacentes (σ0, σ1…)
-
+-- * On représente les symétries comme produits d'identités et de la permutation élémentaire
+--
+-- Observations :
+-- * Il y a deux approches à l'implémentation des permutations. Celle-ci est plus simple que dans la v2, sans
+-- doute sera-t-elle suffisante.
+--
 
 data Atom = Atom Symbol
 type Obj = [Atom]
@@ -82,53 +85,24 @@ id3 :: Mor '[a,b,c] '[a,b,c]
 id3 = Id
 
 
-
-data Prefix :: Obj -> Type where
-  PNil  :: Prefix '[]
-  PCons :: Proxy x -> Prefix xs -> Prefix (x ': xs)
-
-liftR :: Prefix p -> Mor xs ys -> Mor (p :⊗ xs) (p :⊗ ys)
-liftR  PNil                    f = f
-liftR (PCons (_ :: Proxy x) p) f = Tens (Id :: Mor '[x] '[x]) (liftR p f)
-
-p1 :: forall a. Prefix '[a]
-p1 = PCons (Proxy @a) PNil
-
-p2 :: forall a b. Prefix '[a,b]
-p2 = PCons (Proxy @a) (PCons (Proxy @b) PNil)
-
-
-swapAt :: forall p x y xs. Prefix p -> Mor (p :⊗ (x ': y ': xs)) (p :⊗ (y ': x ': xs))
-swapAt p = liftR p (TSwap @x @y @xs)
-
-
-σ :: Mor (x ': y ': xs) (y ': x ': xs)
+σ :: Mor '[a,b] '[b,a]
 σ = TSwap
 
-σ1 :: Mor (x ': y ': xs) (y ': x ': xs)
-σ1 = TSwap
-
-σ2 :: Mor (a ': x ': y ': xs) (a ': y ': x ': xs)
-σ2 = swapAt p1
-
-σ3 :: Mor (a ': b ': x ': y ': xs) (a ': b ': y ': x ': xs)
-σ3 = swapAt p2
-
-
 σ132 :: Mor '[a,b,c] '[a,c,b]
-σ132 = σ2
+σ132 = id1 ⊗ σ
 
 σ213 :: Mor '[a,b,c] '[b,a,c]
-σ213 = σ1
+σ213 = σ ⊗ id1
 
 σ231 :: Mor '[a,b,c] '[b,c,a]
-σ231 = σ1 ∙ σ2
+σ231 = σ213 ∙ σ132
 
 σ312 :: Mor '[a,b,c] '[c,a,b]
-σ312 = σ2 ∙ σ1
+σ312 = σ132 ∙ σ213
 
 σ321 :: Mor '[a,b,c] '[c,b,a]
-σ321 = σ1 ∙ σ2 ∙ σ1
+σ321 = σ132 ∙ σ213 ∙ σ132
+
 
 
 source :: forall (r :: Symbol). Mor I (Itm r)
@@ -156,6 +130,7 @@ test' = source @Coal ⊗ ironMiner
 ironIngotFactory = ironMiner ∙ ironSmelter
 steelIngotFactory   = (ironMiner ⊗ coalMiner) ∙ steelFoundry
 steelIngotFactory'  = (ironMiner ⊗ source @Coal) ∙ steelFoundry
-steelIngotFactory'' = (coalMiner ⊗ ironMiner) ∙ σ ∙ steelFoundry
+
+steelIngotTarget = (coalMiner ⊗ ironMiner) ∙ σ ∙ steelFoundry ∙ target @SteelIngot
 
 
