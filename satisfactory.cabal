@@ -81,6 +81,8 @@ executable satisfactory
         Symbols.Recipes
         Items
         Syntax
+        Syntax1
+        Syntax2
 
     -- Base language which the package is written in.
     default-language: Haskell2010
