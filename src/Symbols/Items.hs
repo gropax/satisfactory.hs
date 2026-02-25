@@ -5,10 +5,14 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Symbols.Items
-  ( IronOre
+  ( Coal
+  , IronOre
   , IronIngot
+  , SteelIngot
   ) where
 
 
-type IronOre   = "IronOre"
+type Coal = "Coal"
 type IronIngot = "IronIngot"
+type IronOre   = "IronOre"
+type SteelIngot = "SteelIngot"

@@ -3,13 +3,15 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Syntax
   ( Obj(..)
   , Mor(..)
   ) where
 
-import GHC.TypeLits (Symbol, KnownSymbol, symbolVal)
+import GHC.TypeLits
 import Data.Kind (Type)
 import Data.Proxy
 import Symbols.Items
@@ -23,13 +25,9 @@ data Obj
   | Obj :⊗ Obj
   | Obj :⊕ Obj
 
-infixr 7 :⊗
-infixr 6 :⊕
 
---instance Show Obj where
---  show I = "1"
---  show O = "0"
---  show (Itm s) = symbolVal (Proxy s)
+infixl 7 :⊗
+infixl 6 :⊕
 
 
 data Mor :: Obj -> Obj -> Type where
@@ -75,8 +73,17 @@ data Mor :: Obj -> Obj -> Type where
   AnnihR' :: Mor O (a :⊗ O)
 
   -- Primitive morphisms
-  Prim :: KnownSymbol r => Proxy r -> Mor a b
+  Prim :: forall (r :: Symbol) a b. Proxy r -> Mor a b
 
+
+σ :: Mor (a :⊗ b) (b :⊗ a)
+σ = TSwap
+
+σ231 :: Mor ((a :⊗ b) :⊗ c) ((b :⊗ c) :⊗ a)
+σ231 = (TSwap ⊗ Id) ∙ TAssoc ∙ (Id ⊗ TSwap) ∙ TAssoc'
+
+σ231' :: Mor (a :⊗ (b :⊗ c)) (b :⊗ (c :⊗ a))
+σ231' = TAssoc' ∙ (TSwap ⊗ Id) ∙ TAssoc ∙ (Id ⊗ TSwap)
 
 
 infixl 1 ∘
@@ -97,11 +104,25 @@ infixl 6 ⊕
 
 
 
+store :: forall (r :: Symbol) a. Mor I a
+store = Prim (Proxy @r)
+
+coalMiner :: Mor I (Itm Coal)
+coalMiner = Prim (Proxy @CoalRecipe)
+
 ironMiner :: Mor I (Itm IronOre)
 ironMiner = Prim (Proxy @IronOreRecipe)
 
 ironSmelter :: Mor (Itm IronOre) (Itm IronIngot)
 ironSmelter = Prim (Proxy @IronIngotRecipe)
 
+steelFoundry :: Mor (Itm IronOre :⊗ Itm Coal) (Itm SteelIngot)
+steelFoundry = Prim (Proxy @SteelIngotRecipe)
 
-test = ironMiner ∙ ironSmelter
+
+ironIngotFactory = ironMiner ∙ ironSmelter
+steelIngotFactory   = (ironMiner ⊗ coalMiner) ∙ steelFoundry
+steelIngotFactory'  = (ironMiner ⊗ store @Coal) ∙ steelFoundry
+steelIngotFactory'' = (coalMiner ⊗ ironMiner) ∙ σ ∙ steelFoundry
+
+
