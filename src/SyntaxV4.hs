@@ -8,7 +8,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
 module SyntaxV4
-  ( Obj, Atom(..), Mor(..), I, KnownObj(..)
+  ( Obj, Atom(..), Mor(..), I, KnownObj(..), Itm
   , (∘), (∙), (⊗)
   , id1, id2, id3
   , σ
@@ -84,6 +84,10 @@ data Mor :: Obj -> Obj -> Type where
   Split :: Mor a (a :⊗ a)
   Merge :: Mor (a :⊗ a) a
 
+  Source :: KnownSymbol r => Proxy r -> Mor I (Itm r)
+  Target :: KnownSymbol r => Proxy r -> Mor (Itm r) I
+
+
 
 infixl 1 ∘
 (∘) :: Mor b c -> Mor a b -> Mor a c
@@ -148,10 +152,10 @@ merge4 = (merge2 ⊗ id2) ∙ merge3
 
 
 source :: forall r. KnownSymbol r => Mor I (Itm r)
-source = Prim (Proxy @r)
+source = Source (Proxy @r)
 
 target :: forall r. KnownSymbol r => Mor (Itm r) I
-target = Prim (Proxy @r)
+target = Target (Proxy @r)
 
 
 coalMiner :: Mor I (Itm Coal)
