@@ -2,8 +2,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Circuits
-  ( Graph(..), Node(..), Edge(..), Port(..), NodeId(..), WireId(..)
+  ( Graph(..), Node(..), Edge(..), Port(..), NodeId(..), WireId(..), Compiled(..)
   , addNode, addEdge
+  , empty
   ) where
 
 import GHC.TypeLits (KnownSymbol, symbolVal)

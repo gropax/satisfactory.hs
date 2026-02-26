@@ -1,10 +1,10 @@
 # Questions
-- Quel rapport entre `Symbol` et `KnownSymbol` ? Peut-on créer soi-même ce genre de « couple » ?
-- Qu'est-ce que `GHC.TypeLits` ?
-- Comment le _builder pattern_ se traduit-il en Haskell ? Via la monade `State` ?
-- Qu'est-ce que `Type` ? Qu'est-ce qu'un `Kind` ?
 - À quoi sert la quantification `forall` ?
+- Comment le _builder pattern_ se traduit-il en Haskell ? Via la monade `State` ?
+- Quel est le pattern utilisé qui décompose la compilation en deux parties : `compileWith` et `compileClosed` ?
+- 
 
+# Notes
 - Kinds : descripteurs/types de types
     + `Symbol` : chaînes au niveau des types
     + `Nat` : entiers au niveau des types

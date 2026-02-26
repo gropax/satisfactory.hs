@@ -6,15 +6,14 @@
 {-# LANGUAGE GADTs #-}
 
 module Compile
-  (
+  ( compile
   ) where
 
 import GHC.TypeLits (Symbol)
 import Data.Proxy (Proxy(..))
 import Control.Monad.State.Strict
-import SyntaxV4 (Obj, Atom(..), Mor(..), I, KnownObj(..))
+import SyntaxV4
 import qualified Circuits as G
-
 
 
 type CompileM = State G.Graph
@@ -88,4 +87,6 @@ compileWith mor ins =
         _     -> error "Merge: expected exactly 2 input ports"
 
 
-
+compile :: Mor I I -> G.Graph
+compile m = execState (compileWith m []) G.empty
+      
