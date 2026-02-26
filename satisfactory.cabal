@@ -73,7 +73,8 @@ executable satisfactory
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.18.3.0,
-        containers
+        containers,
+        mtl
 
     -- Directories containing source files.
     hs-source-dirs: app, src
@@ -86,7 +87,9 @@ executable satisfactory
         SyntaxV1,
         SyntaxV2,
         SyntaxV3,
+        SyntaxV4,
         Circuits,
+        Compile,
 
     -- Base language which the package is written in.
     default-language: Haskell2010

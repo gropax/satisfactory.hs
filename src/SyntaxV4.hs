@@ -7,8 +7,8 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module SyntaxV3
-  ( Obj, Atom(..), Mor(..), I
+module SyntaxV4
+  ( Obj, Atom(..), Mor(..), I, KnownObj(..)
   , (∘), (∙), (⊗)
   , id1, id2, id3
   , σ
@@ -28,7 +28,7 @@ import Symbols.Items
 import Symbols.Recipes
 
 
--- ===== Syntaxe v3 =====
+-- ===== Syntaxe v4 =====
 -- Hypothèses :
 -- * On ne travaille qu'au niveau des machines : on ignore les connecteurs, et donc l'opération de somme monoïdale.
 -- * On ignore les boucles (pas d'opérateur de trace)
@@ -53,16 +53,29 @@ type family (:⊗) (xs :: Obj) (ys :: Obj) :: Obj where
   (x ': xs) :⊗ ys = x ': (xs :⊗ ys)
 
 
+class KnownObj (xs :: Obj) where
+  objLen :: Proxy xs -> Int
+
+instance KnownObj '[] where
+  objLen _ = 0
+
+instance forall x xs. KnownObj xs => KnownObj (x ': xs) where
+  objLen _ = 1 + objLen (Proxy @xs)
+
+
+
 data Mor :: Obj -> Obj -> Type where
   -- Category structure
   Id   :: Mor a a
   Comp :: Mor a b -> Mor b c -> Mor a c
 
   -- Primitive morphisms
-  Prim :: forall (r :: Symbol) a b. Proxy r -> Mor a b
+  Prim :: forall r a b. (KnownSymbol r, KnownObj a, KnownObj b)
+       => Proxy r -> Mor a b
 
   -- Monoidal bifunctor
-  Tens :: Mor a b -> Mor c d -> Mor (a :⊗ c) (b :⊗ d)
+  Tens :: forall a b c d. (KnownObj a, KnownObj c)
+       => Mor a b -> Mor c d -> Mor (a :⊗ c) (b :⊗ d)
 
   -- Isomorphisms of ⊗
   Swap  :: Mor (x ': y ': xs) (y ': x ': xs)
@@ -81,7 +94,8 @@ infixl 2 ∙
 (∙) = Comp
 
 infixl 7 ⊗
-(⊗) :: Mor a b -> Mor c d -> Mor (a :⊗ c) (b :⊗ d)
+(⊗) :: forall a b c d. (KnownObj a, KnownObj c)
+    => Mor a b -> Mor c d -> Mor (a :⊗ c) (b :⊗ d)
 (⊗) = Tens
 
 
@@ -133,10 +147,10 @@ merge4 :: Mor '[a,a,a,a] '[a]
 merge4 = (merge2 ⊗ id2) ∙ merge3
 
 
-source :: forall (r :: Symbol). Mor I (Itm r)
+source :: forall r. KnownSymbol r => Mor I (Itm r)
 source = Prim (Proxy @r)
 
-target :: forall (r :: Symbol). Mor (Itm r) I
+target :: forall r. KnownSymbol r => Mor (Itm r) I
 target = Prim (Proxy @r)
 
 
