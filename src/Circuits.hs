@@ -5,8 +5,8 @@ module Circuits
   (
   ) where
 
-import GHC.TypeLits (Symbol, KnownSymbol, symbolVal)
-import Data.Data (Proxy)
+import GHC.TypeLits (KnownSymbol, symbolVal)
+import Data.Proxy (Proxy(..))
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 
@@ -39,7 +39,24 @@ data Graph = Graph
   , nextWire :: Int
   , nodes    :: Map NodeId Node
   , edges    :: [Edge]
-  }
+  } deriving (Eq, Show)
 
 empty :: Graph
 empty = Graph 0 0 M.empty []
+
+addNode :: Node -> Graph -> (NodeId, Graph)
+addNode n g =
+  let i  = nextNode g
+      k  = NodeId i
+      g' = g { nextNode = i + 1, nodes = M.insert k n (nodes g) }
+  in (k, g')
+
+addEdge :: Port -> Port -> Graph -> Graph
+addEdge p q g = g { edges = Edge p q : edges g }
+
+
+data Compiled = Compiled
+  { cGraph   :: Graph
+  , cInputs  :: [Port]
+  , cOutputs :: [Port]
+  } deriving (Eq, Show)

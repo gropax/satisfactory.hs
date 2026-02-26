@@ -42,13 +42,14 @@ import Symbols.Recipes
 
 data Atom = Atom Symbol
 type Obj = [Atom]
+
 type I = '[] :: Obj
+type Itm (s :: Symbol) = '[ 'Atom s ]
+
 
 type family (:⊗) (xs :: Obj) (ys :: Obj) :: Obj where
-  '[] :⊗ ys = ys
+  I :⊗ ys = ys
   (x ': xs) :⊗ ys = x ': (xs :⊗ ys)
-
-type Itm (s :: Symbol) = '[ 'Atom s ]
 
 
 data Mor :: Obj -> Obj -> Type where
