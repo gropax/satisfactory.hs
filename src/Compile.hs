@@ -9,7 +9,7 @@ module Compile
   ( compile
   ) where
 
-import GHC.TypeLits (Symbol, KnownSymbol)
+import GHC.TypeLits (Symbol, KnownSymbol, symbolVal)
 import Data.Proxy (Proxy(..))
 import Control.Monad.State.Strict
 import SyntaxV4
@@ -33,7 +33,7 @@ wireZip ps qs =
     GT -> error "too many inputs"
 
 juncNode :: G.Node
-juncNode = G.Node (Proxy @"JUNC")
+juncNode = G.Node "JUNC"
 
 
 compileWith
@@ -95,7 +95,7 @@ compileWith mor ins =
       -> CompileM [G.Port]
 
     compileNode _ _ pr inputs = do
-      nid <- addNode (G.Node pr)
+      nid <- addNode $ G.Node $ symbolVal pr
 
       let nIn  = objLen (Proxy @x)
           nOut = objLen (Proxy @y)
