@@ -83,6 +83,7 @@ executable satisfactory
         Symbols.Items,
         Symbols.Recipes,
         Items,
+        Recipes,
         Syntax,
         SyntaxV1,
         SyntaxV2,

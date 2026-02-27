@@ -25,7 +25,7 @@ import GHC.TypeLits
 import Data.Kind (Type)
 import Data.Proxy
 import Symbols.Items
-import Symbols.Recipes
+import qualified Symbols.Recipes as R
 
 
 -- ===== Syntaxe v3 =====
@@ -141,16 +141,16 @@ target = Prim (Proxy @r)
 
 
 coalMiner :: Mor I (Itm Coal)
-coalMiner = Prim (Proxy @CoalRecipe)
+coalMiner = Prim (Proxy @Coal)
 
 ironMiner :: Mor I (Itm IronOre)
-ironMiner = Prim (Proxy @IronOreRecipe)
+ironMiner = Prim (Proxy @R.IronOre)
 
 ironSmelter :: Mor (Itm IronOre) (Itm IronIngot)
-ironSmelter = Prim (Proxy @IronIngotRecipe)
+ironSmelter = Prim (Proxy @R.IronIngot)
 
 steelFoundry :: Mor (Itm IronOre :⊗ Itm Coal) (Itm SteelIngot)
-steelFoundry = Prim (Proxy @SteelIngotRecipe)
+steelFoundry = Prim (Proxy @R.SteelIngot)
 
 
 test :: Mor I (Itm IronOre :⊗ Itm Coal)

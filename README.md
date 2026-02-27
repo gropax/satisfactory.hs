@@ -57,4 +57,7 @@ deviennent des constructeurs de types.
 - [x] Typer les noeuds par un AST (`Recipe`, `Junction`, `Source`, `Sink`)
 - [x] Utiliser des `String` au lieu des `Symbol` dans les graphes
 - [ ] Créer des types décrivant les items et les recettes, ainsi que des types d'ID
+    - [x] Créer les types relatifs aux `Item`
+    - [ ] Finaliser les valeurs de `stackSize` et `sinkPoints`
+    - [ ] Créer les types relatifs aux `Recipe`
 - [ ] Ajouter l'opérateur de `Trace`

@@ -5,14 +5,14 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Symbols.Recipes
-  ( CoalRecipe
-  , IronOreRecipe
-  , IronIngotRecipe
-  , SteelIngotRecipe
+  ( Coal
+  , IronOre
+  , IronIngot
+  , SteelIngot
   ) where
 
 
-type CoalRecipe   = "Coal"
-type IronOreRecipe   = "IronOre"
-type IronIngotRecipe = "IronIngot"
-type SteelIngotRecipe = "SteelIngot"
+type Coal   = "Coal"
+type IronOre   = "IronOre"
+type IronIngot = "IronIngot"
+type SteelIngot = "SteelIngot"
