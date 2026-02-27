@@ -54,6 +54,7 @@ deviennent des constructeurs de types.
 - _Hash consing_ / _Merkle hashing_
 
 # TODO
-- [ ] Typer les noeuds par un AST (`Recipe`, `Junction`, `Source`, `Sink`)
-- [ ] Utiliser des `Text` au lieu des `Symbol` dans les graphes
+- [x] Typer les noeuds par un AST (`Recipe`, `Junction`, `Source`, `Sink`)
+- [x] Utiliser des `String` au lieu des `Symbol` dans les graphes
+- [ ] Créer des types décrivant les items et les recettes, ainsi que des types d'ID
 - [ ] Ajouter l'opérateur de `Trace`
