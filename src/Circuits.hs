@@ -15,7 +15,13 @@ newtype NodeId = NodeId Int deriving (Eq, Ord, Show)
 newtype EdgeId = EdgeId Int deriving (Eq, Ord, Show)
 
 
-newtype Node = Node String deriving (Eq, Ord, Show)
+data Node
+  = Recipe String
+  | Junction
+  | Source String
+  | Target String
+  deriving (Eq, Ord, Show)
+
 
 data Port = InPort NodeId Int | OutPort NodeId Int
   deriving (Eq, Ord, Show)

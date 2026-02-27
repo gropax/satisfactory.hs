@@ -33,7 +33,7 @@ wireZip ps qs =
     GT -> error "too many inputs"
 
 juncNode :: G.Node
-juncNode = G.Node "JUNC"
+juncNode = G.Junction
 
 
 compileWith
@@ -80,22 +80,23 @@ compileWith mor ins =
           pure [G.OutPort nid 0]
         _     -> error "Merge: expected exactly 2 input ports"
 
-    Prim   (pr :: Proxy (r :: Symbol)) -> compileNode (Proxy @a) (Proxy @b) pr ins
-    Source (pr :: Proxy (r :: Symbol)) -> compileNode (Proxy @a) (Proxy @b) pr ins
-    Target (pr :: Proxy (r :: Symbol)) -> compileNode (Proxy @a) (Proxy @b) pr ins
+    Prim   (pr :: Proxy (r :: Symbol)) -> compileNode G.Recipe (Proxy @a) (Proxy @b) pr ins
+    Source (pr :: Proxy (r :: Symbol)) -> compileNode G.Source (Proxy @a) (Proxy @b) pr ins
+    Target (pr :: Proxy (r :: Symbol)) -> compileNode G.Target (Proxy @a) (Proxy @b) pr ins
 
   where
     compileNode
       :: forall x y (r :: Symbol).
          (KnownObj x, KnownObj y, KnownSymbol r)
-      => Proxy x
+      => (String -> G.Node)
+      -> Proxy x
       -> Proxy y
       -> Proxy r
       -> [G.Port]
       -> CompileM [G.Port]
 
-    compileNode _ _ pr inputs = do
-      nid <- addNode $ G.Node $ symbolVal pr
+    compileNode mkNode _ _ pr inputs = do
+      nid <- addNode $ mkNode $ symbolVal pr
 
       let nIn  = objLen (Proxy @x)
           nOut = objLen (Proxy @y)
