@@ -2,7 +2,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Circuits
-  ( Graph(..), Node(..), Edge(..), Port(..), NodeId(..), WireId(..), Compiled(..)
+  ( Graph(..), Node(..), Edge(..), Port(..), NodeId(..), EdgeId(..)
   , addNode, addEdge
   , empty
   ) where
@@ -14,7 +14,7 @@ import qualified Data.Map.Strict as M
 
 
 newtype NodeId = NodeId Int deriving (Eq, Ord, Show)
-newtype WireId = WireId Int deriving (Eq, Ord, Show)
+newtype EdgeId = EdgeId Int deriving (Eq, Ord, Show)
 
 
 data Port = InPort NodeId Int | OutPort NodeId Int
@@ -38,13 +38,13 @@ instance Eq Node where
 
 data Graph = Graph 
   { nextNode :: Int
-  , nextWire :: Int
+  , nextEdge :: Int
   , nodes    :: Map NodeId Node
-  , edges    :: [Edge]
+  , edges    :: Map EdgeId Edge
   } deriving (Eq, Show)
 
 empty :: Graph
-empty = Graph 0 0 M.empty []
+empty = Graph 0 0 M.empty M.empty
 
 addNode :: Node -> Graph -> (NodeId, Graph)
 addNode n g =
@@ -54,11 +54,8 @@ addNode n g =
   in (k, g')
 
 addEdge :: Port -> Port -> Graph -> Graph
-addEdge p q g = g { edges = Edge p q : edges g }
-
-
-data Compiled = Compiled
-  { cGraph   :: Graph
-  , cInputs  :: [Port]
-  , cOutputs :: [Port]
-  } deriving (Eq, Show)
+addEdge p q g = 
+  let i  = nextEdge g
+      k  = EdgeId i
+      g' = g { nextEdge = i + 1, edges = M.insert k (Edge p q) (edges g) }
+  in g'

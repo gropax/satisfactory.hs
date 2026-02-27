@@ -34,3 +34,26 @@ deviennent des constructeurs de types.
     + Construire des fonctions sur les types avec `type family`.
     + Maîtriser la réflexion et la réification des types (`KnownSymbol`)
     + Maîtriser l'existentialisation des valeurs (`SomeSymbol`)
+- Paradigme fonctionnel
+    + L'ID ne doit pas être dans les modèles (e.g. `Node` ne connais pas `NodeId`), contrairement au paradigme DB ou Web.
+        * Dans un CRUD, l'identité est **primaire** (métier), l'objet est une entité.
+        * Dans mes graphes, l'ID est un artéfact d'indexation
+        - -> Construire une note **Faut-il mettre l'Id dans la structure de données ?**
+
+# Pistes
+- https://chatgpt.com/s/t_69a0b30dcb5c81918a2c653f097e4396
+    + Monoïde vs comonoïde
+    + bialgèbre
+    + algèbre de Hopf
+    + algèbre de flux (linéaire)
+    + structure/loi de Frobenius
+    + 
+
+# Algorithmes
+- _Union-find_
+- _Hash consing_ / _Merkle hashing_
+
+# TODO
+- [ ] Typer les noeuds par un AST (`Recipe`, `Junction`, `Source`, `Sink`)
+- [ ] Utiliser des `Text` au lieu des `Symbol` dans les graphes
+- [ ] Ajouter l'opérateur de `Trace`
